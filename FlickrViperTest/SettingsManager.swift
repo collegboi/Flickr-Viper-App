@@ -14,7 +14,7 @@ class SettingsManager {
     private static let fileName = "Settings"
     
     private struct SettingsKey {
-        static let serverKey = "serverKey"
+        static let serverKey = "serverKey" //KEY provided by Flickr API
     }
     
     private static func readPlistFile() -> [String: AnyObject]? {
@@ -27,7 +27,10 @@ class SettingsManager {
     
     public static func readServerKey() -> String {
         
-        guard let dict = readPlistFile() else {return ""}
+        guard let dict = readPlistFile() else {
+            print("SETTINGS.PLIST file may be missing")
+            return ""
+        }
 
         return dict[SettingsKey.serverKey] as? String ?? ""
     }

@@ -12,7 +12,7 @@
         <!--Photo View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="PhotoViewController" customModule="FlickrViperTest" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="BYZ-38-t0r" customClass="PhotoViewController" customModule="FlickrViperTest" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -23,6 +23,7 @@
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="RCa-QR-MDg">
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="J8f-W7-o1a">
                                     <size key="itemSize" width="100" height="100"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -98,10 +99,10 @@
             </objects>
             <point key="canvasLocation" x="660" y="-545.57721139430294"/>
         </scene>
-        <!--View Controller-->
+        <!--Photo Detail View Controller-->
         <scene sceneID="ipV-zp-MSa">
             <objects>
-                <viewController id="UdQ-kI-bjA" sceneMemberID="viewController">
+                <viewController id="UdQ-kI-bjA" customClass="PhotoDetailViewController" customModule="FlickrViperTest" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="AhY-jJ-8AF"/>
                         <viewControllerLayoutGuide type="bottom" id="oyd-Qc-hHL"/>
@@ -144,6 +145,10 @@
                             <constraint firstItem="qmR-6L-3Of" firstAttribute="leading" secondItem="lpY-7C-LW8" secondAttribute="leading" id="yEJ-QP-pEB"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="photoTitleLabel" destination="pma-yy-vbq" id="bRP-LZ-DUN"/>
+                        <outlet property="photoUIImageView" destination="JvE-cl-aEZ" id="xt7-l9-bmM"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bq4-d9-fYX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

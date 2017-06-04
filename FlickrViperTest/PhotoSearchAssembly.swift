@@ -18,11 +18,15 @@ class PhotoSearchAssembly {
         let APIDataManager = FlickrDataManager()
         let interactor = PhotoSearchInteractor()
         let presenter = PhotoSearchPresenter()
+        let routing = PhotoSearchRouting()
         
+        routing.viewController = viewController
+        presenter.router = routing
         viewController.presenter = presenter
+        presenter.view = viewController
+        interactor.presenter = presenter
         presenter.interactor = interactor
         interactor.APIDataManager = APIDataManager
-        
         
     }
 }

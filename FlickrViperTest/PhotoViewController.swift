@@ -10,11 +10,15 @@ import UIKit
 
 protocol PhotoViewControllerOutput {
     func fetchPhotos(_ searchText: String, page: NSInteger)
+    func gotoPhotoDetailScreen()
+    func passDataToNextScene(_ seque: UIStoryboardSegue)
 }
 
 protocol PhotoViewControllerInput {
     func displayFetchedPhotos(_ photos: [FlickrPhotoModel], totalPages: NSInteger)
     func displayErrorView(_ errorMessage: String)
+    func showWaitingView()
+    func hideWaitingView()
 }
 
 class PhotoViewController: UIViewController, PhotoViewControllerInput {
@@ -36,15 +40,12 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        self.title = "Party"
+        self.title = Constants.Photo.searchText
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        performSearchWith("Party")
+        performSearchWith(Constants.Photo.searchText)
     }
 
     override func didReceiveMemoryWarning() {
@@ -55,12 +56,11 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     /*
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    // In a storyboard-based application, you will often want to do a little preparation before navigation */
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        presenter.passDataToNextScene(segue)
     }
-    */
+    
 
     func performSearchWith(_ searchText: String) {
         presenter.fetchPhotos(searchText, page: currentPage)
@@ -80,12 +80,36 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     //Show Error 
     func displayErrorView(_ errorMessage: String) {
         
-        let refreshAlert = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .alert)
-        refreshAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
+        let refreshAlert = UIAlertController(title: Constants.ErrorAlert.title, message: errorMessage, preferredStyle: .alert)
+        refreshAlert.addAction(UIAlertAction(title: Constants.ErrorAlert.actionTitle, style: .default, handler: { (action) in
             refreshAlert.dismiss(animated: true, completion: nil)
         }))
         
         present(refreshAlert, animated: true, completion: nil)
+    }
+    
+    //MARK: - Activity View
+    func showWaitingView() {
+        
+        let alert = UIAlertController(title: Constants.WaitingAlert.title, message: Constants.WaitingAlert.message, preferredStyle: .alert)
+        
+        alert.view.tintColor = Constants.WaitingAlert.tintColor
+        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50)) as UIActivityIndicatorView
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.activityIndicatorViewStyle = .gray
+        loadingIndicator.startAnimating()
+        
+        alert.view.addSubview(loadingIndicator)
+        
+        self.navigationController?.present(alert, animated: true, completion: nil)
+    }
+    
+    func hideWaitingView() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func getTotalPhotoCount() -> Int {
+        return self.photos.count
     }
 }
 
@@ -111,7 +135,7 @@ extension PhotoViewController: UICollectionViewDataSource {
         } else {
             
             currentPage += 1
-            performSearchWith("Party")
+            performSearchWith(Constants.Photo.searchText)
             return photoLoadingCell(collectionView, cellForItemAt: indexPath as NSIndexPath)
         }
     }
@@ -119,6 +143,18 @@ extension PhotoViewController: UICollectionViewDataSource {
     func photoItemCell(_ collectionView: UICollectionView, cellForItemAt indexPath: NSIndexPath ) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoItemCell.defaultResuseIdenitifier, for: indexPath as IndexPath) as? PhotoItemCell
+        
+        let flickrPhoto = self.photos[indexPath.row]
+        
+        cell?.photoImageView.alpha = 0
+        cell?.photoImageView.sd_setImage(with: flickrPhoto.photoURL as URL, completed: { (image, error, imageCache, url) in
+            
+            cell?.photoImageView.image = image
+            UIView.animate(withDuration: 0.2, animations: { 
+                cell?.photoImageView.alpha = 1.0
+            })
+        })
+        
         return cell!
     }
     
@@ -134,7 +170,7 @@ extension PhotoViewController: UICollectionViewDataSource {
 extension PhotoViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //TODO
+        self.presenter.gotoPhotoDetailScreen()
     }
     
 }

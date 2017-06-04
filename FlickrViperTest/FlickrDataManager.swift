@@ -8,12 +8,17 @@
 
 import Foundation
 import UIKit
+import SDWebImage
 
 protocol FlickrPhotoSearchProtocol: class {
     func fetchPhotosForSearchText(searchText:String, page: NSInteger, closure: @escaping (NSError?, NSInteger, [FlickrPhotoModel]? ) -> Void ) -> Void
 }
 
-class FlickrDataManager: FlickrPhotoSearchProtocol {
+protocol FlickrPhotoLoadImageProtocol: class {
+    func loadImageFromURL(_ url: NSURL, completionHandler: @escaping (UIImage?, NSError? ) -> Void )
+}
+
+class FlickrDataManager: FlickrPhotoSearchProtocol, FlickrPhotoLoadImageProtocol {
     
     //static let sharedInstance = FlickrDataManager()
     
@@ -98,7 +103,8 @@ class FlickrDataManager: FlickrPhotoSearchProtocol {
         
         let request = URLRequest(url: url as URL)
         
-        let searchTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        
+        let imageTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
             
             guard let data = data , error == nil else {
                 completionHandler(nil, error as NSError?)
@@ -106,10 +112,9 @@ class FlickrDataManager: FlickrPhotoSearchProtocol {
             }
             let image = UIImage(data: data)
             completionHandler(image, nil)
-
         }
         
-        searchTask.resume()
-
+        imageTask.resume()
+      
     }
 }
