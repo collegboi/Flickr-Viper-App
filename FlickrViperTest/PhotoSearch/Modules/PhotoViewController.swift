@@ -32,6 +32,10 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     var currentPage: NSInteger = 1
     var totalPages: NSInteger = 1
     
+//    fileprivate var flickrCollectionDelegate: FlickrCollectionDelegate!
+//    fileprivate var flickrCollectionDataSource: FlickrCollectionDataSource!
+//    fileprivate var flickrCollectionFlowDelegate: FlickrCollectionFlowDelegate!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -45,7 +49,22 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        performSearchWith(Constants.Photo.searchText)
+        
+//        //DataSource to load new page
+//        flickrCollectionDataSource = FlickrCollectionDataSource(photoCollectionView, performNextSearch: { (pageNumber) in
+//            self.performSearchWith(Constants.Photo.searchText, pageNumber)
+//        })
+//        
+//        
+//        //Delegate for selecting cell item
+//        flickrCollectionDelegate = FlickrCollectionDelegate(photoCollectionView, selectionPhoto: { (flickrModel ) in
+//            self.presenter.gotoPhotoDetailScreen()
+//        })
+//        
+//        flickrCollectionFlowDelegate = FlickrCollectionFlowDelegate(photoCollectionView)
+        
+        
+        performSearchWith(Constants.Photo.searchText, self.currentPage)
     }
 
     override func didReceiveMemoryWarning() {
@@ -62,7 +81,7 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     }
     
 
-    func performSearchWith(_ searchText: String) {
+    func performSearchWith(_ searchText: String, _ pageCount: Int) {
         presenter.fetchPhotos(searchText, page: currentPage)
         
     }
@@ -73,8 +92,15 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
         self.totalPages = totalPages
         DispatchQueue.main.async {
             self.photoCollectionView.reloadData()
+            //self.reloadCollectionView()
         }
     }
+//    
+//    func reloadCollectionView() {
+//        self.flickrCollectionDelegate.reloadData(self.photos)
+//        self.flickrCollectionFlowDelegate.reloadCount(self.photos.count)
+//        self.flickrCollectionDataSource.reloadData(self.photos)
+//    }
     
     
     //Show Error 
@@ -135,7 +161,7 @@ extension PhotoViewController: UICollectionViewDataSource {
         } else {
             
             currentPage += 1
-            performSearchWith(Constants.Photo.searchText)
+            performSearchWith(Constants.Photo.searchText, self.currentPage)
             return photoLoadingCell(collectionView, cellForItemAt: indexPath as NSIndexPath)
         }
     }
