@@ -32,6 +32,9 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     var currentPage: NSInteger = 1
     var totalPages: NSInteger = 1
     
+    var searchBar: UISearchBar?
+    var searchText: String = Constants.Photo.searchText
+    
 //    fileprivate var flickrCollectionDelegate: FlickrCollectionDelegate!
 //    fileprivate var flickrCollectionDataSource: FlickrCollectionDataSource!
 //    fileprivate var flickrCollectionFlowDelegate: FlickrCollectionFlowDelegate!
@@ -44,12 +47,11 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.title = Constants.Photo.searchText
+        self.title = searchText.capitalizingFirstLetter()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
 //        //DataSource to load new page
 //        flickrCollectionDataSource = FlickrCollectionDataSource(photoCollectionView, performNextSearch: { (pageNumber) in
 //            self.performSearchWith(Constants.Photo.searchText, pageNumber)
@@ -70,6 +72,27 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    @IBAction func searchBarItem(_ sender: Any) {
+        self.createSearchBar()
+    }
+    
+    
+    //Creating search bar 
+    func createSearchBar() {
+        self.searchBar = UISearchBar(frame: CGRect(x: 5, y: 5, width: 40, height: UIScreen.main.bounds.width - 5))
+        self.searchBar?.showsCancelButton = true
+        self.searchBar?.placeholder = "Search"
+        self.searchBar?.delegate = self
+        
+        self.navigationItem.titleView = searchBar
+    }
+    
+    func hideSearchBar() {
+        self.navigationItem.titleView = nil
+        self.searchBar = nil
+    }
+
     
 
     /*
@@ -137,6 +160,26 @@ class PhotoViewController: UIViewController, PhotoViewControllerInput {
     func getTotalPhotoCount() -> Int {
         return self.photos.count
     }
+    
+}
+
+//MARK: - UISearchBarDelegate 
+extension PhotoViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let searchText = searchBar.text {
+            self.searchText = searchText
+            searchBar.endEditing(true)
+            self.title = searchText.capitalizingFirstLetter()
+            self.photos.removeAll()
+            performSearchWith(self.searchText, self.currentPage)
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+        self.hideSearchBar()
+    }
 }
 
 //MARK: - UICollectionViewDataSource
@@ -196,6 +239,7 @@ extension PhotoViewController: UICollectionViewDataSource {
 extension PhotoViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.hideSearchBar()
         self.presenter.gotoPhotoDetailScreen()
     }
     

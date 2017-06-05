@@ -89,7 +89,13 @@
                             <constraint firstAttribute="trailing" secondItem="RCa-QR-MDg" secondAttribute="trailing" id="LSp-37-99E"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="wtH-Hm-k6S"/>
+                    <navigationItem key="navigationItem" id="wtH-Hm-k6S">
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="7fS-2g-dXA">
+                            <connections>
+                                <action selector="searchBarItem:" destination="BYZ-38-t0r" id="4qB-ci-7Vq"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="photoCollectionView" destination="RCa-QR-MDg" id="6gm-1j-UHa"/>
                         <segue destination="UdQ-kI-bjA" kind="show" identifier="ShowDetailVC" id="Ubt-Bh-BxU"/>
